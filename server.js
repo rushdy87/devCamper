@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 // morgan is a third party logging library for logging HTTP requests
 const morgan = require("morgan");
 // colors is an optional library to add colors to console outputs
-const colors = require("colors");
+require("colors");
 const connectDB = require("./config/db");
 
 // Route files
@@ -18,6 +18,9 @@ connectDB();
 
 // Initialize Express app
 const app = express();
+
+// Body parser middleware to parse JSON request bodies
+app.use(express.json());
 
 // Dev logging middleware
 if (process.env.NODE_ENV === "development") {

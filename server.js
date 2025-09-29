@@ -9,8 +9,9 @@ const connectDB = require("./config/db");
 // Route files
 const bootcamps = require("./routes/bootcamps");
 
-//  Load environment variables from .env file
-dotenv.config({ path: "./config/config.env" });
+// Load environment variables from .env file
+// The 'quiet: true' option suppresses warnings if the .env file is missing
+dotenv.config({ path: "./config/config.env", quiet: true });
 
 // Connect to database
 connectDB();

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
-// const geocoder = require("../utils/geocoder");
+//// const geocoder = require("../utils/geocoder");
 
 // Create Bootcamp schema, and Schema is like a blueprint of how the data should look like
 const BootcampSchema = new mongoose.Schema({

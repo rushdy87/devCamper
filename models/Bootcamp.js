@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const slugify = require("slugify");
+// const geocoder = require("../utils/geocoder");
 
 // Create Bootcamp schema, and Schema is like a blueprint of how the data should look like
 const BootcampSchema = new mongoose.Schema({
@@ -103,6 +105,31 @@ const BootcampSchema = new mongoose.Schema({
   },
 });
 
+// Create bootcamp slug from the name before saving
+BootcampSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// Geocode & create location field
+BootcampSchema.pre("save", async function (next) {
+  // const loc = await geocoder.geocode(this.address);
+  this.location = {
+    type: "Point",
+    coordinates: [48.8698679, 2.3072976],
+    formattedAddress: this.address,
+    street: "Champs-Élysées",
+    city: "Paris",
+    state: "Île-de-France",
+    zipcode: "75000",
+    country: "France",
+  };
+
+  // Do not save address in DB, we already have formattedAddress (full address) in location
+  this.address = undefined;
+  next();
+});
+
 // Create Bootcamp model, and the model is a class with which we construct documents. In this case, each document will be a bootcamp with the properties and behaviors defined by the schema.
 module.exports = mongoose.model("Bootcamp", BootcampSchema);
 
@@ -112,3 +139,4 @@ module.exports = mongoose.model("Bootcamp", BootcampSchema);
 // The index: "2dsphere" option creates a geospatial index on the coordinates field, allowing for efficient geospatial queries.
 // The geospatial means related to geographic locations on the Earth's surface, and in MongoDB, it allows for querying and indexing of location-based data.
 // enum is used to specify a set of allowed values for a field, ensuring that the value stored in the field is one of the predefined options.
+// Mongoose have many kinds of middleware, and the pre middleware is executed before a certain event (in this case, before saving a document).

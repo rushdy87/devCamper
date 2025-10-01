@@ -23,6 +23,9 @@ const app = express();
 // Body parser middleware to parse JSON request bodies
 app.use(express.json());
 
+// Use extended query parser to support nested objects in query strings
+app.set("query parser", "extended");
+
 // Dev logging middleware
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

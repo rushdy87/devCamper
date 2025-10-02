@@ -7,7 +7,19 @@ const asyncHandler = require("../middlewares/async");
 // @access Public
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
   let query;
-  let queryStr = JSON.stringify(req.query);
+
+  // Copy req.query
+  let reqQuery = { ...req.query };
+
+  // Fields to exclude
+  const removeFields = ["select", "sort"];
+
+  // Loop over removeFields and delete them from reqQuery
+  //delete operator in JavaScript removes a property from an object
+  removeFields.forEach((param) => delete reqQuery[param]);
+
+  // Create query string
+  let queryStr = JSON.stringify(reqQuery);
 
   // Create operators ($gt, $gte, etc)
   queryStr = queryStr.replace(
@@ -17,6 +29,22 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
 
   // Finding resources
   query = Bootcamp.find(JSON.parse(queryStr));
+
+  // Select Fields
+  if (req.query.select) {
+    // Convert CSV to space-separated string, as Mongoose expects space-separated field names
+    const fields = req.query.select.split(",").join(" ");
+    query = query.select(fields);
+  }
+
+  // Sorting
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    query = query.sort(sortBy);
+  } else {
+    // Default sort by creation date descending
+    query = query.sort("-createdAt");
+  }
 
   // Executing query
   const bootcamps = await query;

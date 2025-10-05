@@ -9,6 +9,7 @@ const { errorHandler } = require("./middlewares/error");
 
 // Route files
 const bootcamps = require("./routes/bootcamps");
+const courses = require("./routes/courses");
 
 // Load environment variables from .env file
 // The 'quiet: true' option suppresses warnings if the .env file is missing
@@ -33,6 +34,7 @@ if (process.env.NODE_ENV === "development") {
 
 // Mount routers
 app.use("/api/v1/bootcamps", bootcamps);
+app.use("/api/v1/courses", courses);
 
 // Error handling middleware (should be after mounting routes)
 app.use(errorHandler);

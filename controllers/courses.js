@@ -67,3 +67,40 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
   const course = await Course.create(req.body);
   return res.status(201).json({ success: true, data: course });
 });
+
+// @desc Update course
+// @route PUT /api/v1/courses/:id
+// @access Private
+exports.updateCourse = asyncHandler(async (req, res, next) => {
+  // We do not need bootcamp in this situation, so we can directly update the course
+  const { id } = req.params;
+  const course = await Course.findById(id);
+
+  if (!course) {
+    return next(new ErrorResponse(`No course with the id of ${id}`, 404));
+  }
+
+  // Update the course
+  const updatedCourse = await Course.findByIdAndUpdate(id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  return res.status(200).json({ success: true, data: updatedCourse });
+});
+
+// @desc Delete course
+// @route DELETE /api/v1/courses/:id
+// @access Private
+exports.deleteCourse = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const course = await Course.findById(id);
+
+  if (!course) {
+    return next(new ErrorResponse(`No course with the id of ${id}`, 404));
+  }
+
+  await course.deleteOne();
+
+  return res.status(200).json({ success: true, data: {} });
+});

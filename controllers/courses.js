@@ -1,4 +1,5 @@
 const Course = require("../models/Course");
+const Bootcamp = require("../models/Bootcamp");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middlewares/async");
 
@@ -45,4 +46,24 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
   }
 
   return res.status(200).json({ success: true, data: course });
+});
+
+// @desc Add course
+// @route POST /api/v1/bootcamps/:bootcampId/courses
+// @access Private
+exports.addCourse = asyncHandler(async (req, res, next) => {
+  req.body.bootcamp = req.params.bootcampId;
+
+  const bootcamp = await Bootcamp.findById(req.params.bootcampId);
+  if (!bootcamp) {
+    return next(
+      new ErrorResponse(
+        `No bootcamp with the id of ${req.params.bootcampId}`,
+        404
+      )
+    );
+  }
+
+  const course = await Course.create(req.body);
+  return res.status(201).json({ success: true, data: course });
 });

@@ -42,8 +42,6 @@ const CourseSchema = new Schema({
 // Static method to get avg of course tuitions
 // The static method in mongoose is called on the model itself, not on an instance of the model
 CourseSchema.statics.getAverageCost = async function (bootcampId) {
-  console.log("Calculating avg cost...");
-
   try {
     // The aggregate method is used to perform aggregation operations on the model's data
     // It takes an array of stages that define the aggregation pipeline.

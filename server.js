@@ -1,7 +1,9 @@
+const path = require("path");
 const express = require("express");
 const dotenv = require("dotenv");
 // morgan is a third party logging library for logging HTTP requests
 const morgan = require("morgan");
+const fileupload = require("express-fileupload");
 // colors is an optional library to add colors to console outputs
 require("colors");
 const connectDB = require("./config/db");
@@ -31,6 +33,12 @@ app.set("query parser", "extended");
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
+// File upload middleware
+app.use(fileupload());
+
+// Set static folder to serve static files
+app.use(express.static(path.join(__dirname, "public")));
 
 // Mount routers
 app.use("/api/v1/bootcamps", bootcamps);

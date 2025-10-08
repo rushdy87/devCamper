@@ -12,6 +12,7 @@ const { errorHandler } = require("./middlewares/error");
 // Route files
 const bootcamps = require("./routes/bootcamps");
 const courses = require("./routes/courses");
+const auth = require("./routes/auth");
 
 // Load environment variables from .env file
 // The 'quiet: true' option suppresses warnings if the .env file is missing
@@ -43,6 +44,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Mount routers
 app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/courses", courses);
+app.use("/api/v1/auth", auth);
 
 // Error handling middleware (should be after mounting routes)
 app.use(errorHandler);

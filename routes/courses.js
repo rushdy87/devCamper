@@ -8,7 +8,7 @@ const {
 } = require("../controllers/courses");
 const advancedResults = require("../middlewares/advancedResults");
 const Course = require("../models/Course");
-const { protect } = require("../middlewares/auth");
+const { protect, authorize } = require("../middlewares/auth");
 
 // Merge params to get access to bootcampId in the params
 const router = express.Router({ mergeParams: true });
@@ -19,12 +19,12 @@ router
     advancedResults(Course, { path: "bootcamp", select: "name description" }),
     getCourses
   )
-  .post(protect, addCourse);
+  .post(protect, authorize("publisher", "admin"), addCourse);
 router
   .route("/:id")
   .get(getCourse)
-  .put(protect, updateCourse)
-  .delete(protect, deleteCourse);
+  .put(protect, authorize("publisher", "admin"), updateCourse)
+  .delete(protect, authorize("publisher", "admin"), deleteCourse);
 
 module.exports = router;
 // The mergeParams option is set to true to allow access to parameters from parent routes, such as bootcampId when adding a course to a specific bootcamp.

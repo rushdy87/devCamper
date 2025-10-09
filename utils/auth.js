@@ -1,7 +1,6 @@
 // @desc    Create token and send response
 // @param   {Object} user - Mongoose user model instance
 // @param   {number} statusCode - HTTP status code for the response
-
 // @param   {Object} res - Express response object
 exports.sendTokenResponse = (user, statusCode, res) => {
   // Create token

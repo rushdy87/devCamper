@@ -1,8 +1,9 @@
 // @desc    Create token and send response
 // @param   {Object} user - Mongoose user model instance
 // @param   {number} statusCode - HTTP status code for the response
+
 // @param   {Object} res - Express response object
-const sendTokenResponse = (user, statusCode, res) => {
+exports.sendTokenResponse = (user, statusCode, res) => {
   // Create token
   const token = user.getSignedJwtToken();
 
@@ -25,5 +26,3 @@ const sendTokenResponse = (user, statusCode, res) => {
       token,
     });
 };
-
-module.exports = sendTokenResponse;

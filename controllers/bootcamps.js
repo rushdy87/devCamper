@@ -2,6 +2,7 @@ const path = require("path");
 const Bootcamp = require("../models/Bootcamp");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middlewares/async");
+const { isTheOwner } = require("../utils/user");
 
 // @desc Get all bootcamps
 // @route GET /api/v1/bootcamps
@@ -52,14 +53,27 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 // @access Private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const bootcamp = await Bootcamp.findByIdAndUpdate(id, req.body, {
-    new: true, // return the modified document rather than the original
-    runValidators: true, // run schema validators on update
-  });
+  const bootcamp = await Bootcamp.findById(id);
   if (!bootcamp) {
     return next(new ErrorResponse(`No bootcamp with the id of ${id}`, 404));
   }
-  return res.status(200).json({ success: true, data: bootcamp });
+
+  // Make sure user is bootcamp owner
+  if (!isTheOwner(req.user, bootcamp.user)) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update this bootcamp`,
+        401
+      )
+    );
+  }
+
+  const updatedBootcamp = await Bootcamp.findByIdAndUpdate(id, req.body, {
+    new: true, // return the new updated document
+    runValidators: true, // run the validators defined in the schema
+  });
+
+  return res.status(200).json({ success: true, data: updatedBootcamp });
 });
 
 // @desc Delete bootcamp
@@ -71,6 +85,18 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
   if (!bootcamp) {
     return next(new ErrorResponse(`No bootcamp with the id of ${id}`, 404));
   }
+
+  // Make sure user is bootcamp owner
+  if (!isTheOwner(req.user, bootcamp.user)) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to delete this bootcamp`,
+        401
+      )
+    );
+  }
+
+  //* Use deleteOne() instead of findByIdAndDelete() to trigger the 'deleteOne' middleware in the Bootcamp model
 
   await bootcamp.deleteOne(); // triggers the 'deleteOne' middleware in the Bootcamp model to cascade delete related courses
 
@@ -119,8 +145,19 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
 exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const bootcamp = await Bootcamp.findById(id);
+
   if (!bootcamp) {
     return next(new ErrorResponse(`No bootcamp with the id of ${id}`, 404));
+  }
+
+  // Make sure user is bootcamp owner
+  if (!isTheOwner(req.user, bootcamp.user)) {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update this bootcamp`,
+        401
+      )
+    );
   }
 
   // Check if a file is uploaded

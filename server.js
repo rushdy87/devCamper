@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 // morgan is a third party logging library for logging HTTP requests
 const morgan = require("morgan");
 const fileupload = require("express-fileupload");
+const cookieParser = require("cookie-parser");
 // colors is an optional library to add colors to console outputs
 require("colors");
 const connectDB = require("./config/db");
@@ -26,6 +27,12 @@ const app = express();
 
 // Body parser middleware to parse JSON request bodies
 app.use(express.json());
+
+// Cookie parser middleware to parse cookies
+// Cookies are small pieces of data stored on the client side and sent to the server with each request
+// it is commonly used for session management, authentication, and storing user preferences
+// The cookie-parser middleware parses the cookies attached to the client request object and makes them available under req.cookies
+app.use(cookieParser());
 
 // Use extended query parser to support nested objects in query strings
 app.set("query parser", "extended");

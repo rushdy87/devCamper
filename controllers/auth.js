@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middlewares/async");
+const sendTokenResponse = require("../utils/auth");
 
 // @desc    Register user
 // @route   POST /api/v1/auth/register
@@ -11,10 +12,8 @@ exports.register = asyncHandler(async (req, res, next) => {
   // Create user
   const user = await User.create({ name, email, password, role });
 
-  // Create token
-  const token = user.getSignedJwtToken();
-
-  res.status(201).json({ success: true, token });
+  // sendTokenResponse is a utility function that creates a JWT token, sets it in an HTTP-only cookie, and sends the response
+  sendTokenResponse(user, 200, res);
 });
 
 // @desc    Login user
@@ -47,8 +46,6 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Invalid credentials", 401));
   }
 
-  // Create token
-  const token = user.getSignedJwtToken();
-
-  res.status(200).json({ success: true, token });
+  // sendTokenResponse is a utility function that creates a JWT token, sets it in an HTTP-only cookie, and sends the response
+  sendTokenResponse(user, 200, res);
 });

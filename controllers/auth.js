@@ -61,6 +61,57 @@ exports.getMe = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: user });
 });
 
+// @desc    Update user details
+// @route   PUT /api/v1/auth/updatedetails
+// @access  Private
+exports.updateDetails = asyncHandler(async (req, res, next) => {
+  // Only allow updating name and email
+  // If the client sends other fields, they will be ignored
+  // And If the client does not send name or email, those fields will be set to undefined
+  // which means they will not be updated in the database
+  // This is a simple way to whitelist fields for update
+  // In a real application, you might want to add more validation here
+  // For example, check if the email is valid, or if the name is not empty
+  // You can use a library like express-validator for that
+  // But for simplicity, we are not doing that here
+  const fieldsToUpdate = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+
+  const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({ success: true, data: user });
+});
+
+// @desc    Update password
+// @route   PUT /api/v1/auth/updatepassword
+// @access  Private
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return next(
+      new ErrorResponse("Please provide current and new password", 400)
+    );
+  }
+
+  const user = await User.findById(req.user.id).select("+password");
+
+  // Check current password
+  if (!(await user.matchPassword(currentPassword))) {
+    return next(new ErrorResponse("Password is incorrect", 401));
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  sendTokenResponse(user, 200, res);
+});
+
 // @desc    Forgot password
 // @route   POST /api/v1/auth/forgotpassword
 // @access  Public

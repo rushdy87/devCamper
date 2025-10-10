@@ -25,3 +25,32 @@ exports.sendTokenResponse = (user, statusCode, res) => {
       token,
     });
 };
+
+// desc    Send email
+// param   {Object} options - Options for sending email
+// param   {string} options.email - Recipient email address
+// param   {string} options.subject - Subject of the email
+// param   {string} options.message - Body of the email
+const nodemailer = require("nodemailer");
+
+exports.sendEmail = async (options) => {
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    auth: {
+      user: process.env.SMTP_EMAIL,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
+
+  const message = {
+    from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`, // sender address
+    to: options.email, // list of receivers
+    subject: options.subject, // Subject line
+    text: options.message, // plain text body
+  };
+
+  const info = await transporter.sendMail(message);
+
+  console.log(`Message sent: ${info.messageId}`);
+};

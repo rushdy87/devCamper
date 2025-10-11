@@ -15,6 +15,7 @@ const bootcamps = require("./routes/bootcamps");
 const courses = require("./routes/courses");
 const auth = require("./routes/auth");
 const users = require("./routes/users");
+const reviews = require("./routes/reviews");
 
 // Load environment variables from .env file
 // The 'quiet: true' option suppresses warnings if the .env file is missing
@@ -54,6 +55,7 @@ app.use("/api/v1/bootcamps", bootcamps);
 app.use("/api/v1/courses", courses);
 app.use("/api/v1/auth", auth);
 app.use("/api/v1/users", users);
+app.use("/api/v1/reviews", reviews);
 
 // Error handling middleware (should be after mounting routes)
 app.use(errorHandler);
